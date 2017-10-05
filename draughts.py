@@ -31,7 +31,7 @@ def whiteMove():
             board[x2][y2] = 'w'
             
     else:
-        print("Invalid selection")
+        print("Sorry. Invalid selection")
     updateState()
     
 whiteMove()
