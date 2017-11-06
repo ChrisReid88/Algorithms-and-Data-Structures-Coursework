@@ -1,7 +1,7 @@
 board = [['-','w','-','w','-','w','-','w'],
          ['w','-','w','-','w','-','w','-'],
          ['-','w','-','w','-','w','-','w'],
-         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','b','-','-','-'],
          ['-','-','-','-','-','-','-','-'],
          ['b','-','b','-','b','-','b','-'],
          ['-','b','-','b','-','b','-','b'],
@@ -20,11 +20,10 @@ def update_state():
         print '  -----------------------------'
 
 
-update_state()
-
-
 # Selecting and moving the white piece
 def white_move():
+    update_state()
+    print 'WHITES TURN'
     piece_to_move = raw_input('Select the piece you wish to move: ')
     row_number = int(piece_to_move[1])
     col_number = int(piece_to_move[0])
@@ -43,7 +42,7 @@ def white_move():
 
     if board[row_number][col_number] == 'w':
 
-        moves = available_moves(row_number, col_number)
+        moves = available_white_moves(row_number, col_number)
 
         if moves:
             print 'Moves available: ', moves
@@ -55,30 +54,101 @@ def white_move():
         if place_to_move in moves:
             row_number2 = int(place_to_move[1])
             col_number2 = int(place_to_move[0])
+            board[row_number][col_number] = '-'
             board[row_number2][col_number2] = 'w'
+            black_move()
         else:
             print 'Sorry, move not available!'
             white_move()
 
 
+# Selecting and moving the white piece
+def black_move():
+    update_state()
+    print'BLACKS TURN'
+    piece_to_move = raw_input('Select the piece you wish to move: ')
+    row_number = int(piece_to_move[1])
+    col_number = int(piece_to_move[0])
+
+    # If wrong colour is selected, alert user and restart whites turn
+    if board[row_number][col_number] == 'w':
+        update_state()
+        print 'Wrong piece, genius. You are blacks.'
+        black_move()
+
+    # If empty space is picked, alert user and restart whites turn.
+    if board[row_number][col_number] == '-':
+        update_state()
+        print 'You selected an empty square! Try again.'
+        black_move()
+
+    if board[row_number][col_number] == 'b':
+
+        moves = available_black_moves(row_number, col_number)
+
+        if moves:
+            print 'Moves available: ', moves
+        else:
+            print 'No moves are available'
+            black_move()
+
+        place_to_move = raw_input('Where do you wish to move to?: ')
+        if place_to_move in moves:
+            row_number2 = int(place_to_move[1])
+            col_number2 = int(place_to_move[0])
+            board[row_number][col_number] = '-'
+            board[row_number2][col_number2] = 'b'
+            white_move()
+        else:
+            print 'Sorry, move not available!'
+            black_move()
+
+
 # Find out and display available moves
-def available_moves(row, col):
+def available_white_moves(row, col):
     # if col != 0 and col != 7:
     #     print 'Available moves are', row-1, col+1, 'and', row+1, col+1
     moves = []
-    if col != 0 and board[row + 1][col - 1] == '-':
+    if col != 0 and board[row+1][col-1] == '-':
         move = str(col - 1) + str(row + 1)
         moves.append(move)
     if col != 7 and board[row+1][col+1] == '-':
         move = str(col+1) + str(row+1)
         moves.append(move)
+    if col != 7 and board[row+1][col+1] == 'b' and board[row+2][col+2] == '-':
+        move = str(col+2) + str(row+2)
+        moves.append(move)
+    if col != 0 and board[row+1][col-1] == 'b' and board[row+2][col-2] == '-':
+        move = str(col-2) + str(row+2)
+        moves.append(move)
 
     return moves
 
 
+# Find out and display available moves
+def available_black_moves(row, col):
+    # if col != 0 and col != 7:
+    #     print 'Available moves are', row-1, col+1, 'and', row+1, col+1
+    moves = []
+    if col != 0 and board[row-1][col+1] == '-':
+        move = str(col + 1) + str(row - 1)
+        moves.append(move)
+    if col != 7 and board[row-1][col-1] == '-':
+        move = str(col-1) + str(row-1)
+        moves.append(move)
+    if col != 7 and board[row-1][col-1] == 'b' and board[row-2][col-2] == '-':
+        move = str(col-2) + str(row-2)
+        moves.append(move)
+    if col != 7 and board[row-1][col+1] == 'b' and board[row-2][col+2] == '-':
+        move = str(col-2) + str(row+2)
+        moves.append(move)
+
+    return moves
+
 white_move()
 
-update_state()
+
+
 
 # def valid_white_move(row, col):
 #     if board[row-1][col+1] == '-' and board[row+1][col+1]:
