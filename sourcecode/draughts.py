@@ -1,7 +1,7 @@
 board = [['-','-','-','-','-','-','-','-'],
          ['-','-','-','-','w','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
-         ['-','-','b','-','-','-','b','-'],
+         ['-','-','-','-','-','B','-','-'],
+         ['-','-','b','-','-','-','w','-'],
          ['-','-','-','W','-','-','-','-'],
          ['-','-','-','-','b','-','-','-'],
          ['-','w','-','-','-','-','-','-'],
@@ -124,6 +124,7 @@ def white_move():
 
 # Selecting and moving the white piece
 def black_move():
+    player = 'black'
     black_pieces = ['b', 'B']
     update_state()
     print'BLACKS TURN'
@@ -146,6 +147,11 @@ def black_move():
     if board[row_number][col_number] in black_pieces:
 
         moves = available_black_moves(row_number, col_number, 'black')
+
+        # If the selected piece is a king add the blacks movements to the available move list
+        if board[row_number][col_number] == 'B':
+            king_moves = available_white_moves(row_number, col_number, 'black_king')
+        moves = moves + king_moves
 
         if moves:
             print 'Moves available: ', moves
@@ -170,6 +176,10 @@ def black_move():
                 board[row_number-1][col_number+1] = '-'
             elif col_number - col_number2 == 2 and row_number - row_number2 == 2:
                 board[row_number-1][col_number-1] = '-'
+            if col_number2 - col_number == 2 and row_number2 - row_number == 2:
+                board[row_number + 1][col_number + 1] = '-'
+            elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
+                board[row_number + 1][col_number - 1] = '-'
 
             bw = black_win(board)
 
@@ -210,6 +220,7 @@ def available_white_moves(row, col, player):
 
 # Find out and display available moves
 def available_black_moves(row, col, player):
+
     moves = []
 
     if player == 'black':
