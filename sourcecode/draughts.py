@@ -56,6 +56,10 @@ def white_move():
             col_number2 = int(place_to_move[0])
             board[row_number][col_number] = '-'
             board[row_number2][col_number2] = 'w'
+            if col_number2 - col_number == 2 and row_number2 - row_number == 2:
+                board[row_number+1][col_number+1] = '-'
+            elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
+                board[row_number+1][col_number-1] = '-'
             black_move()
         else:
             print 'Sorry, move not available!'
@@ -98,6 +102,10 @@ def black_move():
             col_number2 = int(place_to_move[0])
             board[row_number][col_number] = '-'
             board[row_number2][col_number2] = 'b'
+            if col_number2 - col_number == 2 and row_number - row_number2 == 2:
+                board[row_number-1][col_number+1] = '-'
+            elif col_number - col_number2 == 2 and row_number - row_number2 == 2:
+                board[row_number-1][col_number-1] = '-'
             white_move()
         else:
             print 'Sorry, move not available!'
@@ -136,14 +144,15 @@ def available_black_moves(row, col):
     if col != 7 and board[row-1][col-1] == '-':
         move = str(col-1) + str(row-1)
         moves.append(move)
-    if col != 7 and board[row-1][col-1] == 'b' and board[row-2][col-2] == '-':
+    if col != 7 and board[row-1][col-1] == 'w' and board[row-2][col-2] == '-':
         move = str(col-2) + str(row-2)
         moves.append(move)
-    if col != 7 and board[row-1][col+1] == 'b' and board[row-2][col+2] == '-':
-        move = str(col-2) + str(row+2)
+    if col != 0 and board[row-1][col+1] == 'w' and board[row-2][col+2] == '-':
+        move = str(col+2) + str(row-2)
         moves.append(move)
 
     return moves
+
 
 white_move()
 
