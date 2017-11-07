@@ -1,11 +1,21 @@
-board = [['-','w','-','w','-','w','-','w'],
-         ['w','-','w','-','w','-','w','-'],
-         ['-','w','-','w','-','w','-','w'],
-         ['-','-','-','-','b','-','-','-'],
+board = [['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','w','-','-','-'],
          ['-','-','-','-','-','-','-','-'],
-         ['b','-','b','-','b','-','b','-'],
-         ['-','b','-','b','-','b','-','b'],
-         ['b','-','b','-','b','-','b','-']]
+         ['-','-','b','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-']]
+
+
+# board = [['-','w','-','w','-','w','-','w'],
+#          ['w','-','w','-','w','-','w','-'],
+#          ['-','w','-','w','-','w','-','w'],
+#          ['-','-','-','-','b','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['b','-','b','-','b','-','b','-'],
+#          ['-','b','-','b','-','b','-','b'],
+#          ['b','-','b','-','b','-','b','-']]
 
 
 top = '  0   1   2   3   4   5   6   7'
@@ -60,7 +70,11 @@ def white_move():
                 board[row_number+1][col_number+1] = '-'
             elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
                 board[row_number+1][col_number-1] = '-'
-            black_move()
+            ww = white_win(board)
+            if ww:
+                print 'WHITE WINS!'
+            else:
+                black_move()
         else:
             print 'Sorry, move not available!'
             white_move()
@@ -106,7 +120,11 @@ def black_move():
                 board[row_number-1][col_number+1] = '-'
             elif col_number - col_number2 == 2 and row_number - row_number2 == 2:
                 board[row_number-1][col_number-1] = '-'
-            white_move()
+            bw = black_win(board)
+            if bw:
+                print 'BLACK WINS!'
+            else:
+                white_move()
         else:
             print 'Sorry, move not available!'
             black_move()
@@ -153,6 +171,17 @@ def available_black_moves(row, col):
 
     return moves
 
+
+def white_win(game_board):
+    if not any('b' in sublist for sublist in game_board):
+        # print "Game over! Whites Win!"
+        return True
+
+
+def black_win(game_board):
+    if not any('w' in sublist for sublist in game_board):
+        # print "Game over! Whites Win!"
+        return True
 
 white_move()
 
