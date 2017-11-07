@@ -1,5 +1,14 @@
+'''
+Simple draughts console game created by Chris Reid 05/10/17
+Matric = 40202859
+Module code = Set091117
+Module title = Algorithms and data structures.
+'''
+
+
+# Board for testing
 board = [['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','w','-','-','-'],
+         ['-','-','b','-','w','-','-','-'],
          ['-','-','-','-','-','B','-','-'],
          ['-','-','b','-','-','-','w','-'],
          ['-','-','-','W','-','-','-','-'],
@@ -7,11 +16,11 @@ board = [['-','-','-','-','-','-','-','-'],
          ['-','w','-','-','-','-','-','-'],
          ['-','-','-','-','-','-','-','-']]
 
-
+# The actual board
 # board = [['-','w','-','w','-','w','-','w'],
 #          ['w','-','w','-','w','-','w','-'],
 #          ['-','w','-','w','-','w','-','w'],
-#          ['-','-','-','-','b','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
 #          ['-','-','-','-','-','-','-','-'],
 #          ['b','-','b','-','b','-','b','-'],
 #          ['-','b','-','b','-','b','-','b'],
@@ -65,7 +74,7 @@ def white_move():
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'W':
             king_moves = available_black_moves(row_number, col_number, 'white_king')
-        moves = moves + king_moves
+            moves = moves + king_moves
 
         # If there are moves available display them. If not, alert user no moves available
         # and restart their move
@@ -151,7 +160,7 @@ def black_move():
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'B':
             king_moves = available_white_moves(row_number, col_number, 'black_king')
-        moves = moves + king_moves
+            moves = moves + king_moves
 
         if moves:
             print 'Moves available: ', moves
@@ -180,6 +189,10 @@ def black_move():
                 board[row_number + 1][col_number + 1] = '-'
             elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
                 board[row_number + 1][col_number - 1] = '-'
+
+            print row_number2
+            print col_number2
+            kinging(row_number2, col_number2, player)
 
             bw = black_win(board)
 
@@ -260,8 +273,8 @@ def black_win(game_board):
 def kinging(row, col, player):
     if row == 7 and player == 'white':
         board[row][col] = 'W'
-    elif row == 0 and player == 'black':
-        board[row][col] == 'B'
+    if row == 0 and player == 'black':
+        board[row][col] = 'B'
 
 white_move()
 
