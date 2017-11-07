@@ -69,11 +69,11 @@ def white_move():
     if board[row_number][col_number] in white_pieces:
 
         # Retrieve the available moves
-        moves = available_white_moves(row_number, col_number, player)
+        moves = available_moves_down(row_number, col_number, player)
 
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'W':
-            king_moves = available_black_moves(row_number, col_number, 'white_king')
+            king_moves = available_moves_up(row_number, col_number, 'white_king')
             moves = moves + king_moves
 
         # If there are moves available display them. If not, alert user no moves available
@@ -155,11 +155,11 @@ def black_move():
 
     if board[row_number][col_number] in black_pieces:
 
-        moves = available_black_moves(row_number, col_number, 'black')
+        moves = available_moves_up(row_number, col_number, 'black')
 
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'B':
-            king_moves = available_white_moves(row_number, col_number, 'black_king')
+            king_moves = available_moves_down(row_number, col_number, 'black_king')
             moves = moves + king_moves
 
         if moves:
@@ -206,33 +206,33 @@ def black_move():
 
 
 # Find out and display available moves
-def available_white_moves(row, col, player):
+def available_moves_down(row, col, player):
     if player == 'white':
         opponent = ['b', 'B']
     elif player == 'black_king':
         opponent = ['w', 'W']
 
     moves = []
-
-    if col != 7 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
-        move = str(col+2) + str(row+2)
-        moves.append(move)
-    elif col != 0 and board[row+1][col-1] in opponent and board[row+2][col-2] == '-':
-        move = str(col-2) + str(row+2)
-        moves.append(move)
-    else:
-        if col != 0 and board[row + 1][col - 1] == '-':
-            move = str(col - 1) + str(row + 1)
+    if row != 7:
+        if col != 7 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
+            move = str(col+2) + str(row+2)
             moves.append(move)
-        if col != 7 and board[row + 1][col + 1] == '-':
-            move = str(col + 1) + str(row + 1)
+        elif col != 0 and board[row+1][col-1] in opponent and board[row+2][col-2] == '-':
+            move = str(col-2) + str(row+2)
             moves.append(move)
+        else:
+            if col != 0 and board[row + 1][col - 1] == '-':
+                move = str(col - 1) + str(row + 1)
+                moves.append(move)
+            if col != 7 and board[row + 1][col + 1] == '-':
+                move = str(col + 1) + str(row + 1)
+                moves.append(move)
 
     return moves
 
 
 # Find out and display available moves
-def available_black_moves(row, col, player):
+def available_moves_up(row, col, player):
 
     moves = []
 
@@ -241,19 +241,20 @@ def available_black_moves(row, col, player):
     elif player == 'white_king':
         opponent = ['b', 'B']
 
-    if col != 7 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
-        move = str(col-2) + str(row-2)
-        moves.append(move)
-    elif col != 0 and board[row-1][col+1] in opponent and board[row-2][col+2] == '-':
-        move = str(col+2) + str(row-2)
-        moves.append(move)
-    else:
-        if col != 7 and board[row - 1][col + 1] == '-':
-            move = str(col + 1) + str(row - 1)
+    if row != 0:
+        if col != 7 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
+            move = str(col-2) + str(row-2)
             moves.append(move)
-        if col != 0 and board[row - 1][col - 1] == '-':
-            move = str(col - 1) + str(row - 1)
+        elif col != 0 and board[row-1][col+1] in opponent and board[row-2][col+2] == '-':
+            move = str(col+2) + str(row-2)
             moves.append(move)
+        else:
+            if col != 7 and board[row - 1][col + 1] == '-':
+                move = str(col + 1) + str(row - 1)
+                moves.append(move)
+            if col != 0 and board[row - 1][col - 1] == '-':
+                move = str(col - 1) + str(row - 1)
+                moves.append(move)
 
     return moves
 
