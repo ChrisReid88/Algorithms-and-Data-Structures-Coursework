@@ -138,10 +138,10 @@ def available_black_moves(row, col):
     # if col != 0 and col != 7:
     #     print 'Available moves are', row-1, col+1, 'and', row+1, col+1
     moves = []
-    if col != 0 and board[row-1][col+1] == '-':
+    if col != 7 and board[row-1][col+1] == '-':
         move = str(col + 1) + str(row - 1)
         moves.append(move)
-    if col != 7 and board[row-1][col-1] == '-':
+    if col != 0 and board[row-1][col-1] == '-':
         move = str(col-1) + str(row-1)
         moves.append(move)
     if col != 7 and board[row-1][col-1] == 'w' and board[row-2][col-2] == '-':
