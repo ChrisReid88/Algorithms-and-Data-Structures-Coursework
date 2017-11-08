@@ -46,6 +46,7 @@ def white_move():
     player = 'white'
 
     print 'WHITES TURN'
+    pieces_with_moves(board, 'w')
 
     # The piece the white team wishes to select. (Across then down)
     piece_to_move = raw_input('Select the piece you wish to move: ')
@@ -133,9 +134,10 @@ def white_move():
 
 # Selecting and moving the white piece
 def black_move():
+
     player = 'black'
     black_pieces = ['b', 'B']
-    update_state()
+    pieces_with_moves(board, 'b')
     print'BLACKS TURN'
     piece_to_move = raw_input('Select the piece you wish to move: ')
     row_number = int(piece_to_move[1])
@@ -276,6 +278,30 @@ def kinging(row, col, player):
         board[row][col] = 'W'
     if row == 0 and player == 'black':
         board[row][col] = 'B'
+
+
+def pieces_with_moves(game_board, piece):
+
+    available_pieces = []
+
+    if piece == 'w':
+        king = 'W'
+    elif piece == 'b':
+        king = 'B'
+
+    for i, x in enumerate(game_board):
+        if king in x:
+            available_pieces.append("%d%d" % (x.index(king), i))
+
+    for i, x in enumerate(game_board):
+        if piece in x:
+            available_pieces.append("%d%d" % (x.index(piece), i))
+
+    print "Pieces with moves available: ", available_pieces
+    #
+
+
+
 
 
 update_state()
