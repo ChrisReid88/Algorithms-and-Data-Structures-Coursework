@@ -283,3 +283,62 @@ update_state()
 
 white_move()
 
+
+# Find out and display available moves
+# def available_moves(row, col, player):
+#     moves = []
+#
+#     if player == 'white':
+#         piece = 'b'
+#         if col != 0 and board[row + 1][col - 1] == '-':
+#             move = str(col - 1) + str(row + 1)
+#             moves.append(move)
+#         if col != 7 and board[row + 1][col + 1] == '-':
+#             move = str(col + 1) + str(row + 1)
+#             moves.append(move)
+#         if col != 7 and board[row + 1][col + 1] == piece and board[row + 2][col + 2] == '-':
+#             move = str(col + 2) + str(row + 2)
+#             moves.append(move)
+#         if col != 0 and board[row + 1][col - 1] == piece and board[row + 2][col - 2] == '-':
+#             move = str(col - 2) + str(row + 2)
+#             moves.append(move)
+#     elif player == 'black':
+#         piece = 'w'
+#         if col != 7 and board[row - 1][col + 1] == '-':
+#             move = str(col + 1) + str(row - 1)
+#             moves.append(move)
+#         if col != 0 and board[row-1][col-1] == '-':
+#             move = str(col-1) + str(row-1)
+#             moves.append(move)
+#         if col != 7 and board[row-1][col-1] == piece and board[row-2][col-2] == '-':
+#             move = str(col-2) + str(row-2)
+#             moves.append(move)
+#         if col != 0 and board[row-1][col+1] == piece and board[row-2][col+2] == '-':
+#             move = str(col+2) + str(row-2)
+#             moves.append(move)
+#
+#     return moves
+
+
+# def valid_white_move(row, col):
+#     if board[row-1][col+1] == '-' and board[row+1][col+1]:
+#         return True
+#     return False
+
+
+# def white_move():
+#     peice_to_move = raw_input('Enter a peice to move(E.g 1 1): ')
+#     x = int(peice_to_move[0])
+#     y = int(peice_to_move[2])
+#
+#     if board[x][y] == 'w':
+#         board[x][y] = '-'
+#         place_to_move = raw_input('Select where you want to move: ')
+#         x2 = int(place_to_move[0])
+#         y2 = int(place_to_move[2])
+#         if board[x][y] == '-':
+#             board[x2][y2] = 'w'
+#     else:
+#         print "Sorry. Invalid selection"
+#     update_state()
+
