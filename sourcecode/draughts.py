@@ -210,14 +210,20 @@ def black_move():
             black_move()
 
 
-# Find out and display available moves
+# Find out and display available moves for white pieces or kinged black pieces
 def available_moves_down(row, col, player):
+
+    # Empty list to store valid moves
+    moves = []
+
+    # Creating a list containing the two opponents pieces
     if player == 'w':
         opponent = ['b', 'B']
     elif player == 'black_king':
         opponent = ['w', 'W']
 
-    moves = []
+    # Conditions for valid moves. Valid moves get appended to the list which then get returned.
+    # Prevents pieces moving off the board.
     if row != 7:
         if col != 7 and row < 6 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
             move = str(col+2) + str(row+2)
@@ -236,16 +242,20 @@ def available_moves_down(row, col, player):
     return moves
 
 
-# Find out and display available moves
+# Find out and display available moves for black pieces or kinged white pieces.
 def available_moves_up(row, col, player):
 
+    #Empty list to store valid moves
     moves = []
 
+    # Creating a list containing the two opponents pieces
     if player == 'b':
         opponent = ['w', 'W']
     elif player == 'white_king':
         opponent = ['b', 'B']
 
+    # Conditions for valid moves. Valid moves get appended to the list which then get returned.
+    # Prevents pieces moving off the board.
     if row != 7:
         if col != 0 and row > 1 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
             move = str(col-2) + str(row-2)
@@ -293,28 +303,32 @@ def kinging(row, col, player):
 
 # Find out which pieces have available moves and display them to the user.
 # To be used for the AI opponent
-def pieces_with_moves(game_board,piece):
+def pieces_with_moves(game_board, piece):
 
+    # Empty lists to store the pieces, moves and if any, available takes.
     available_pieces = []
     available_moves = []
     available_takes = []
 
+    # Declaring the kings of the pieces when they are passed to the function
     if piece == 'w':
         king = 'W'
     elif piece == 'b':
         king = 'B'
 
+    # Traverses the board and returns only the pieces that have available moves.
     if piece:
         available_pieces = [(iy, ix) for ix, row in enumerate(game_board) for iy, i in enumerate(row) if i == piece or i == king]
 
+    # Check that any of the pieces in the available_piece list can take an opponents piece. If true, add
+    # them to the available_takes list. If not, add all other moves to the available_moves list.
     for t in available_pieces:
-        if piece:
+        if piece == 'w':
             if available_moves_down(t[1], t[0], 'w'):
                 if int(available_moves_down(t[1], t[0], 'w')[0][1]) - t[1] == 2:
                     available_takes.append("%d%d" % (t[0], t[1]))
                 elif not available_takes:
                     available_moves.append("%d%d" % (t[0], t[1]))
-
         elif piece == 'b':
             if available_moves_up(t[1], t[0], 'b'):
                 if int(available_moves_up(t[1], t[0], 'w')[0][1]) + t[1] == 2:
@@ -323,12 +337,14 @@ def pieces_with_moves(game_board,piece):
                 elif not available_takes:
                     available_moves.append("%d%d" % (t[0], t[1]))
 
+    # If there are any takes available, display them to use, else,
+    # display other available moves.
     if available_takes:
         print "Pieces with moves available: ", available_takes
     else:
         print "Pieces with moves available: ", available_moves
 
-
+# Initiate the game.
 white_move()
 
 # for i, x in enumerate(game_board):
