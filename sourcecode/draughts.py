@@ -7,14 +7,14 @@ Module title = Algorithms and data structures.
 
 
 # Board for testing
-board = [['-','-','-','-','-','-','-','-'],
-         ['-','-','b','-','w','-','-','-'],
-         ['-','-','-','-','-','B','-','-'],
-         ['-','-','b','-','-','-','w','-'],
-         ['-','-','-','W','-','-','-','-'],
-         ['-','-','-','-','b','-','-','-'],
-         ['-','w','-','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-']]
+board = [['-','-','-','b','-','b','-','-'],
+         ['-','-','-','-','W','-','-','-'],
+         ['-','-','-','b','-','b','-','-'],
+         ['-','-','w','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','b','-','-','-','-','-','-'],
+         ['-','-','-','-','-','B','w','-'],
+         ['-','-','-','-','w','-','-','-']]
 
 # The actual board
 # board = [['-','w','-','w','-','w','-','w'],
@@ -41,9 +41,11 @@ def update_state():
 
 # Selecting and moving the white piece
 def white_move():
+
+    update_state()
     # Variables with details of white team
     white_pieces = ['w', 'W']
-    player = 'white'
+    player = 'w'
 
     print 'WHITES TURN'
     pieces_with_moves(board, 'w')
@@ -134,8 +136,9 @@ def white_move():
 
 # Selecting and moving the white piece
 def black_move():
+    update_state()
 
-    player = 'black'
+    player = 'b'
     black_pieces = ['b', 'B']
     pieces_with_moves(board, 'b')
     print'BLACKS TURN'
@@ -157,7 +160,7 @@ def black_move():
 
     if board[row_number][col_number] in black_pieces:
 
-        moves = available_moves_up(row_number, col_number, 'black')
+        moves = available_moves_up(row_number, col_number, 'b')
 
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'B':
@@ -209,17 +212,17 @@ def black_move():
 
 # Find out and display available moves
 def available_moves_down(row, col, player):
-    if player == 'white':
+    if player == 'w':
         opponent = ['b', 'B']
     elif player == 'black_king':
         opponent = ['w', 'W']
 
     moves = []
     if row != 7:
-        if col != 7 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
+        if col != 7 and row < 6 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
             move = str(col+2) + str(row+2)
             moves.append(move)
-        elif col != 0 and board[row+1][col-1] in opponent and board[row+2][col-2] == '-':
+        elif col != 0 and row < 6 and board[row+1][col-1] in opponent and board[row+2][col-2] == '-':
             move = str(col-2) + str(row+2)
             moves.append(move)
         else:
@@ -238,76 +241,103 @@ def available_moves_up(row, col, player):
 
     moves = []
 
-    if player == 'black':
+    if player == 'b':
         opponent = ['w', 'W']
     elif player == 'white_king':
         opponent = ['b', 'B']
 
-    if row != 0:
-        if col != 7 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
+    if row != 7:
+        if col != 0 and row > 1 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
             move = str(col-2) + str(row-2)
             moves.append(move)
-        elif col != 0 and board[row-1][col+1] in opponent and board[row-2][col+2] == '-':
+        elif col != 7 and row > 1 and board[row-1][col+1] in opponent and board[row-2][col+2] == '-':
             move = str(col+2) + str(row-2)
             moves.append(move)
         else:
-            if col != 7 and board[row - 1][col + 1] == '-':
+            if col != 0 and board[row - 1][col + 1] == '-':
                 move = str(col + 1) + str(row - 1)
                 moves.append(move)
-            if col != 0 and board[row - 1][col - 1] == '-':
+            if col != 7 and board[row - 1][col - 1] == '-':
                 move = str(col - 1) + str(row - 1)
                 moves.append(move)
 
     return moves
 
 
+# Check if there are any black pieces left on the board, and if not
+# return that the white team has won
 def white_win(game_board):
+
     if not any('b' in sublist for sublist in game_board):
         # print "Game over! Whites Win!"
         return True
 
 
+# Check if there are any white pieces left on the board, and if not
+# return that the black team has won
 def black_win(game_board):
+
     if not any('w' in sublist for sublist in game_board):
         # print "Game over! Whites Win!"
         return True
 
 
+# King a piece when it reaches the opponents side of the board
 def kinging(row, col, player):
-    if row == 7 and player == 'white':
+
+    if row == 7 and player == 'w':
         board[row][col] = 'W'
-    if row == 0 and player == 'black':
+    if row == 0 and player == 'b':
         board[row][col] = 'B'
 
 
-def pieces_with_moves(game_board, piece):
+# Find out which pieces have available moves and display them to the user.
+# To be used for the AI opponent
+def pieces_with_moves(game_board,piece):
 
     available_pieces = []
+    available_moves = []
+    available_takes = []
 
     if piece == 'w':
         king = 'W'
     elif piece == 'b':
         king = 'B'
 
-    for i, x in enumerate(game_board):
-        if king in x:
-            available_pieces.append("%d%d" % (x.index(king), i))
+    if piece:
+        available_pieces = [(iy, ix) for ix, row in enumerate(game_board) for iy, i in enumerate(row) if i == piece or i == king]
 
-    for i, x in enumerate(game_board):
-        if piece in x:
-            available_pieces.append("%d%d" % (x.index(piece), i))
+    for t in available_pieces:
+        if piece:
+            if available_moves_down(t[1], t[0], 'w'):
+                if int(available_moves_down(t[1], t[0], 'w')[0][1]) - t[1] == 2:
+                    available_takes.append("%d%d" % (t[0], t[1]))
+                elif not available_takes:
+                    available_moves.append("%d%d" % (t[0], t[1]))
 
-    print "Pieces with moves available: ", available_pieces
-    #
+        elif piece == 'b':
+            if available_moves_up(t[1], t[0], 'b'):
+                if int(available_moves_up(t[1], t[0], 'w')[0][1]) + t[1] == 2:
+                    available_takes.append("%d%d" % (t[0], t[1]))
 
+                elif not available_takes:
+                    available_moves.append("%d%d" % (t[0], t[1]))
 
-
-
-
-update_state()
+    if available_takes:
+        print "Pieces with moves available: ", available_takes
+    else:
+        print "Pieces with moves available: ", available_moves
 
 
 white_move()
+
+# for i, x in enumerate(game_board):
+#     if king in x:
+#         available_pieces.append("%d%d" % (x.index(king), i))
+#
+# for i, x in enumerate(game_board):
+#     if piece in x:
+#         available_pieces.append("%d%d" % (x.index(piece), i))
 
 
 # Find out and display available moves
