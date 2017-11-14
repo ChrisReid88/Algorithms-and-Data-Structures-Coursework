@@ -7,9 +7,11 @@ Module title = Algorithms and data structures.
 
 import random
 import copy
+from collections import deque
 
 humans = 0
 undo_stack = []
+redo_stack = deque()
 game_history = []
 
 
@@ -50,6 +52,7 @@ def start_game():
 
     global humans
     global undo_stack
+    global redo_stack
     global game_history
 
     number = raw_input("Please enter how many people are playing (0, 1 or 2) : ")
@@ -62,6 +65,7 @@ def start_game():
         if humans >=0 and humans <= 2:
             temp = copy.deepcopy(board)
             undo_stack.append(temp)
+            redo_stack.append(board)
             white_move()
         else:
             print "%d is not correct. Please enter '0, 1 or 2' for players" % humans
@@ -74,6 +78,7 @@ def white_move():
     global board
     global undo_stack
     global game_history
+    global redo_stack
 
 
     update_state()
@@ -96,16 +101,22 @@ def white_move():
             exit()
     else:
         # The piece the white team wishes to select. (Across then down)
-
         print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
         piece_to_move = raw_input('Select the piece you wish to move or type u to undo: ')
         if piece_to_move == 'u':
-            print len(undo_stack)
             if len(undo_stack) == 1:
                 print "Nothing left to undo."
                 white_move()
             else:
-                undo_stack.pop()
+                redo_stack.append(undo_stack.pop())
+                board = undo_stack[-1]
+                black_move()
+        elif piece_to_move == 'r':
+            if len(redo_stack) == 1:
+                print "Nothing left to redo"
+                black_move()
+            else:
+                undo_stack.append(redo_stack.popleft())
                 board = undo_stack[-1]
                 black_move()
 
@@ -233,9 +244,13 @@ def black_move():
                 print "Nothing left to undo"
                 black_move()
             else:
-                undo_stack.pop()
+                redo_stack.append(undo_stack.pop())
                 board = undo_stack[-1]
                 white_move()
+        elif piece_to_move == 'r':
+            undo_stack.append(redo_stack.popleft())
+            board = undo_stack[-1]
+            white_move()
         else:
             row_number = int(piece_to_move[1])
             col_number = int(piece_to_move[0])
@@ -460,12 +475,13 @@ def pieces_with_moves(game_board, piece):
 
 
 def store_history(hist):
-
     f = open('history.txt', 'w')
     for ele in hist:
         f.write(ele + '\n')
 
     f.close()
+
+
 # Initiate the game.
 start_game()
 
