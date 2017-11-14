@@ -149,6 +149,7 @@ def white_move():
             ww = white_win(board)
             if ww:
                 print 'WHITE WINS!'
+                quit()
             else:
                 black_move()
 
@@ -243,6 +244,7 @@ def black_move():
 
             if bw:
                 print 'BLACK WINS!'
+                quit()
             else:
                 white_move()
         else:
