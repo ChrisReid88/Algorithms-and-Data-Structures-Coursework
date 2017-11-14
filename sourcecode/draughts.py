@@ -10,6 +10,7 @@ import copy
 
 humans = 0
 undo_stack = []
+game_history = []
 
 
 # Board for testing
@@ -46,8 +47,10 @@ def update_state():
 
 
 def start_game():
+
     global humans
     global undo_stack
+    global game_history
 
     number = raw_input("Please enter how many people are playing (0, 1 or 2) : ")
     try:
@@ -64,10 +67,15 @@ def start_game():
             print "%d is not correct. Please enter '0, 1 or 2' for players" % humans
             start_game()
 
+
 # Selecting and moving the white piece
 def white_move():
+
     global board
     global undo_stack
+    global game_history
+
+
     update_state()
 
     # Variables with details of white team
@@ -82,6 +90,7 @@ def white_move():
             row_number = int(piece_to_move[1])
             col_number = int(piece_to_move[0])
             print "AI chooses the piece at", col_number, row_number
+
         else:
             print "No more available moves. Draw! "
             exit()
@@ -103,6 +112,8 @@ def white_move():
         else:
             row_number = int(piece_to_move[1])
             col_number = int(piece_to_move[0])
+
+    game_history.append(piece_to_move)
 
     # If wrong colour is selected, alert user and restart whites turn
     if board[row_number][col_number] == 'b':
@@ -148,6 +159,7 @@ def white_move():
             # Coords of new position
             row_number2 = int(place_to_move[1])
             col_number2 = int(place_to_move[0])
+            game_history.append(place_to_move)
 
             # Enter the piece into the the new square. Either normal or kinged
             # and make the original square empty
@@ -194,8 +206,11 @@ def white_move():
 
 # Selecting and moving the white piece
 def black_move():
+
     global board
     global undo_stack
+    global game_history
+
     update_state()
     player = 'b'
     black_pieces = ['b', 'B']
@@ -224,6 +239,8 @@ def black_move():
         else:
             row_number = int(piece_to_move[1])
             col_number = int(piece_to_move[0])
+
+    game_history.append(piece_to_move)
 
     # If wrong colour is selected, alert user and restart whites turn
     if board[row_number][col_number] == 'w':
@@ -262,6 +279,8 @@ def black_move():
         if place_to_move in moves:
             row_number2 = int(place_to_move[1])
             col_number2 = int(place_to_move[0])
+
+            game_history.append(place_to_move)
 
             if board[row_number][col_number] == 'b':
                 board[row_number2][col_number2] = 'b'
@@ -363,7 +382,7 @@ def available_moves_up(row, col, player):
 def white_win(game_board):
 
     if not any('b' in sublist for sublist in game_board) and not any('B' in sublist for sublist in game_board):
-        # print "Game over! Whites Win!"
+        store_history(game_history)
         return True
 
 
@@ -373,6 +392,7 @@ def black_win(game_board):
 
     if not any('w' in sublist for sublist in game_board) and not any('W' in sublist for sublist in game_board):
         # print "Game over! Whites Win!"
+        store_history(game_history)
         return True
 
 
@@ -439,11 +459,13 @@ def pieces_with_moves(game_board, piece):
         return available_moves
 
 
-def undo(undo_stack):
-    undo_stack.pop
-    return undo_stack[-1]
+def store_history(hist):
 
+    f = open('history.txt', 'w')
+    for ele in hist:
+        f.write(ele + '\n')
 
+    f.close()
 # Initiate the game.
 start_game()
 
