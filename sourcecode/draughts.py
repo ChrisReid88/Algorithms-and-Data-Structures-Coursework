@@ -11,8 +11,8 @@ humans = 0
 
 # Board for testing
 board = [['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','b','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','B','-','-','-'],
+         ['-','-','-','-','-','W','-','-'],
          ['-','-','-','-','-','-','-','-'],
          ['-','-','-','-','-','-','-','-'],
          ['-','-','-','-','-','-','-','-'],
@@ -360,10 +360,15 @@ def pieces_with_moves(game_board, piece):
                     available_takes.append("%d%d" % (t[0], t[1]))
                 elif not available_takes:
                     available_moves.append("%d%d" % (t[0], t[1]))
+            if available_moves_up(t[1], t[0], 'white_king'):
+                if int(available_moves_up(t[1], t[0], 'white_king')[0][1]) - t[1] == 2 or int(available_moves_up(t[1], t[0], 'white_king')[0][1]) - t[1] == -2:
+                    available_takes.append("%d%d" % (t[0], t[1]))
+                else:
+                    available_moves.append("%d%d" % (t[0], t[1]))
         elif piece == 'b':
             if available_moves_up(t[1], t[0], 'b'):
                 print t[1]
-                if int(available_moves_up(t[1], t[0], 'b')[0][1]) - t[1] == 2:
+                if int(available_moves_up(t[1], t[0], 'b')[0][1]) - t[1] == -2:
                     available_takes.append("%d%d" % (t[0], t[1]))
                 elif not available_takes:
                     available_moves.append("%d%d" % (t[0], t[1]))
