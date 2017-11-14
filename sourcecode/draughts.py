@@ -21,30 +21,30 @@ game_history = []
 
 
 # Board for testing
-board = [['-','w','-','-','-','-','-','-'],
-         ['-','-','-','-','B','-','-','-'],
-         ['-','b','-','-','-','-','-','-'],
-         ['-','-','b','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-']]
+# board = [['-','w','-','-','-','-','-','-'],
+#          ['-','-','-','-','B','-','-','-'],
+#          ['-','b','-','-','-','-','-','-'],
+#          ['-','-','b','-','-','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['-','-','-','-','-','-','-','-']]
 
 # # The actual board
-# board = [['-','w','-','w','-','w','-','w'],
-#          ['w','-','w','-','w','-','w','-'],
-#          ['-','w','-','w','-','w','-','w'],
-#          ['-','-','-','-','-','-','-','-'],
-#          ['-','-','-','-','-','-','-','-'],
-#          ['b','-','b','-','b','-','b','-'],
-#          ['-','b','-','b','-','b','-','b'],
-#          ['b','-','b','-','b','-','b','-']]
+board = [['-','w','-','w','-','w','-','w'],
+         ['w','-','w','-','w','-','w','-'],
+         ['-','w','-','w','-','w','-','w'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['b','-','b','-','b','-','b','-'],
+         ['-','b','-','b','-','b','-','b'],
+         ['b','-','b','-','b','-','b','-']]
 
 # Top of the board to be displayed
 top = '  0   1   2   3   4   5   6   7'
 
 
-# Updates and displayes the current state of the board
+# Updates and displays the current state of the board
 def update_state():
     print(top)
     i = 0
@@ -523,8 +523,8 @@ def pieces_with_moves(game_board, piece):
                 if int(available_moves_up(t[1], t[0], 'white_king')[0][1]) - t[1] == 2 or int(available_moves_up(t[1], t[0], 'white_king')[0][1]) - t[1] == -2:
                     if "%d%d" % (t[0], t[1]) not in available_moves:
                         available_moves.append("%d%d" % (t[0], t[1]))
-                    else:
-                        available_moves.append("%d%d" % (t[0], t[1]))
+                else:
+                    available_moves.append("%d%d" % (t[0], t[1]))
         elif piece == 'b':
             if available_moves_up(t[1], t[0], 'b'):
                 if int(available_moves_up(t[1], t[0], 'b')[0][1]) - t[1] == -2:
@@ -536,8 +536,8 @@ def pieces_with_moves(game_board, piece):
                         available_moves_down(t[1], t[0], 'black_king')[0][1]) - t[1] == -2:
                     if "%d%d" % (t[0], t[1]) not in available_moves:
                         available_moves.append("%d%d" % (t[0], t[1]))
-                    else:
-                        available_moves.append("%d%d" % (t[0], t[1]))
+                else:
+                    available_moves.append("%d%d" % (t[0], t[1]))
     # If there are any takes available, display them to use, else,
     # display other available moves.
     if available_takes:
