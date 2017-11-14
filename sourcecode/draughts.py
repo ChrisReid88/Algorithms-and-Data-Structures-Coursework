@@ -521,8 +521,9 @@ def pieces_with_moves(game_board, piece):
                     available_moves.append("%d%d" % (t[0], t[1]))
             if available_moves_up(t[1], t[0], 'white_king'):
                 if int(available_moves_up(t[1], t[0], 'white_king')[0][1]) - t[1] == 2 or int(available_moves_up(t[1], t[0], 'white_king')[0][1]) - t[1] == -2:
-                    if "%d%d" % (t[0], t[1]) not in available_moves:
-                        available_moves.append("%d%d" % (t[0], t[1]))
+                    available_takes.append("%d%d" % (t[0], t[1]))
+                if "%d%d" % (t[0], t[1]) not in available_moves:
+                    available_moves.append("%d%d" % (t[0], t[1]))
                 else:
                     available_moves.append("%d%d" % (t[0], t[1]))
         elif piece == 'b':
@@ -534,8 +535,9 @@ def pieces_with_moves(game_board, piece):
             if available_moves_down(t[1], t[0], 'black_king'):
                 if int(available_moves_down(t[1], t[0], 'black_king')[0][1]) - t[1] == 2 or int(
                         available_moves_down(t[1], t[0], 'black_king')[0][1]) - t[1] == -2:
-                    if "%d%d" % (t[0], t[1]) not in available_moves:
-                        available_moves.append("%d%d" % (t[0], t[1]))
+                    available_takes.append("%d%d" % (t[0], t[1]))
+                if "%d%d" % (t[0], t[1]) not in available_moves:
+                    available_moves.append("%d%d" % (t[0], t[1]))
                 else:
                     available_moves.append("%d%d" % (t[0], t[1]))
     # If there are any takes available, display them to use, else,
@@ -556,4 +558,3 @@ def store_history(hist):
 
 # Initiate the game.
 start_game()
-
