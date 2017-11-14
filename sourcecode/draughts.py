@@ -5,11 +5,15 @@ Module code = Set091117
 Module title = Algorithms and data structures.
 '''
 
+# Random for AI choices, copy to create a deep copy of the stack and deque for
+# the redo feature.
 import random
 import copy
 from collections import deque
 import crayons
 
+# Global variables for the amount of players, a stack for undo and deque for redo,
+# a list that stores all the moves in a game to be stored in a file and fed back.
 humans = 0
 undo_stack = []
 redo_stack = deque()
@@ -36,10 +40,11 @@ board = [['-','w','-','-','-','-','-','-'],
 #          ['-','b','-','b','-','b','-','b'],
 #          ['b','-','b','-','b','-','b','-']]
 
-
+# Top of the board to be displayed
 top = '  0   1   2   3   4   5   6   7'
 
 
+# Updates and displayes the current state of the board
 def update_state():
     print(top)
     i = 0
@@ -49,13 +54,14 @@ def update_state():
         print '  -----------------------------'
 
 
+# Start game function that requests the amount of players
 def start_game():
 
     global humans
     global undo_stack
     global redo_stack
-    global game_history
 
+    # Input and validation ensuring that only 0, 1 or 2 can be entered.
     number = raw_input("Please enter how many people are playing (0, 1 or 2) : ")
     try:
         humans = int(number)
@@ -64,11 +70,13 @@ def start_game():
         start_game()
     else:
         if humans >=0 and humans <= 2:
+            # Add the initial state of the board to the undo stack and redo deque
             temp = copy.deepcopy(board)
             undo_stack.append(temp)
             redo_stack.append(board)
             white_move()
         else:
+            # If the conditions are not met, alert the user and re-execute this function
             print "%d is not correct. Please enter '0, 1 or 2' for players" % humans
             start_game()
 
@@ -76,59 +84,73 @@ def start_game():
 # Selecting and moving the white piece
 def white_move():
 
+    # Global variables so that they can be changed within the function
     global board
     global undo_stack
     global game_history
     global redo_stack
 
-
+    # Display the current state of the board at the beginning of the turn
     update_state()
 
-    # Variables with details of white team
+    # Variables with details of white team and displays what teams go it is
     white_pieces = ['w', 'W']
     player = 'w'
-
     print 'WHITES TURN'
 
+    # If the player is AI (White is AI if only one person is playing)
     if humans < 2:
+        # If there are white pieces with moves, select a random piece from the list
+        # and tell the user what choice was made
         if len(pieces_with_moves(board, 'w')) > 0:
             piece_to_move = random.choice(pieces_with_moves(board, 'w'))
             row_number = int(piece_to_move[1])
             col_number = int(piece_to_move[0])
             print "AI chooses the piece at", col_number, row_number
-
+        # If there are no available moves, its a draw and exit the game
         else:
             print "No more available moves. Draw! "
             exit()
+    # If the player is not AI but there are no available moves, its a draw and exit
     else:
         if len(pieces_with_moves(board, 'w')) == 0:
             print "No more moves available. Draw!"
             exit()
+        # If white pieces have moves available to them, display those pieces coords. User then enters
+        # the coords of the piece they wish to move.
         else:
-            # The piece the white team wishes to select. (Across then down)
             print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
-            piece_to_move = raw_input('Select the piece you wish to move or type u to undo: ')
+            piece_to_move = raw_input('Select the piece you wish to move("u" to undo or "r" for redo : ')
+            # If player enters 'u' and there is only the starting board in the stack, alert them and
+            # restart their move
             if piece_to_move == 'u':
                 if len(undo_stack) == 1:
                     print "Nothing left to undo."
                     white_move()
+                # If there are other states in the stack, remove from the stack and push to deque, then
+                # set the board to the last state within the stack.
                 else:
                     redo_stack.append(undo_stack.pop())
                     board = undo_stack[-1]
                     black_move()
+            # If player enters 'r' for redo and there is only starting board in the deque, alert them and restart their
+            # move.
             elif piece_to_move == 'r':
                 if len(redo_stack) == 1:
                     print "Nothing left to redo"
                     black_move()
+                # If there are states in the deque, pop from the left of the deck and append it to the stack
+                # before setting the board to the previous state in the deque
                 else:
                     undo_stack.append(redo_stack.popleft())
                     board = undo_stack[-1]
                     black_move()
-
+            # If the user entered coords, assign them to the variables
             else:
                 row_number = int(piece_to_move[1])
                 col_number = int(piece_to_move[0])
 
+    # Append the piece that was selected to the game history list.
     game_history.append(piece_to_move)
 
     # If wrong colour is selected, alert user and restart whites turn
@@ -162,6 +184,8 @@ def white_move():
             print 'No moves are available'
             white_move()
 
+        # If player is AI select a random move from the available moves list of the previously selected
+        # piece. Enter to continue to make it easier to follow
         if humans < 2:
             place_to_move = random.choice(moves)
             print 'AI chooses to move to ', place_to_move
@@ -186,7 +210,7 @@ def white_move():
             board[row_number][col_number] = '-'
 
             # If the position changed was a 2 square jump, replace the middle one with a
-            # an empty square (Taking a piece).(added opposite for king pieces.)5
+            # an empty square (Taking a piece).(added opposite for king pieces.)
             if col_number2 - col_number == 2 and row_number2 - row_number == 2:
                 board[row_number+1][col_number+1] = '-'
             elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
@@ -201,7 +225,7 @@ def white_move():
             kinging(row_number2, col_number2, player)
 
             # Check after every move if the enemy has piece on the board. If not
-            # declare whites the winner. If so, change to blacks move.
+            # declare whites the winner. If so, append the board state to the stack and change to blacks move.
             ww = white_win(board)
             if ww:
                 print 'WHITE WINS!'
@@ -210,7 +234,6 @@ def white_move():
                 temp = copy.deepcopy(board)
                 undo_stack.append(temp)
                 black_move()
-
 
         # If the selected square is not in  the available list, alert user and restart
         # their turn.
@@ -227,44 +250,63 @@ def black_move():
     global undo_stack
     global game_history
 
+    # Display the current state of the board at the beginning of the turn
     update_state()
+
+    # Variables with details of white team and displays what teams go it is
     player = 'b'
     black_pieces = ['b', 'B']
     print'BLACKS TURN'
+
+    # If there are no humans playing (for 1 human, white will always be the AI)
     if humans == 0:
+        # If there are black pieces with moves, select a random piece from the list
+        # and tell the user what choice was made
         if len(pieces_with_moves(board, 'b')) > 0:
             piece_to_move = random.choice(pieces_with_moves(board, 'b'))
             row_number = int(piece_to_move[1])
             col_number = int(piece_to_move[0])
             print "AI chooses the piece at", col_number, row_number
+        # If there are no available moves, its a draw and exit the game
         else:
             print "No more available moves. It's a draw!"
             exit()
+    # If the player is not AI but there are no available moves, its a draw and exit
     else:
         if len(pieces_with_moves(board, 'w')) == 0:
             print "No more moves available. Draw!"
             exit()
+        # If black pieces have moves available to them, display those pieces coords. User then enters
+        # the coords of the piece they wish to move.
         else:
             print "Pieces that have moves available: ", pieces_with_moves(board, 'b')
-
             piece_to_move = raw_input('Select the piece you wish to move: ')
+
+            # If player enters 'u' and there is only the starting board in the stack, alert them and
+            # restart their move
             if piece_to_move == 'u':
                 print
                 if len(undo_stack) == 1:
                     print "Nothing left to undo"
                     black_move()
+                # If there are other states in the stack, remove from the stack and push to deque, then
+                # set the board to the last state within the stack.
                 else:
                     redo_stack.append(undo_stack.pop())
                     board = undo_stack[-1]
                     white_move()
+                # If player enters 'r' for redo and there is only starting board in the deque, alert them and restart their
+                # move.
             elif piece_to_move == 'r':
                 undo_stack.append(redo_stack.popleft())
                 board = undo_stack[-1]
                 white_move()
+            # If the user entered coords, assign them to the variables
             else:
                 row_number = int(piece_to_move[1])
                 col_number = int(piece_to_move[0])
 
+    # Store the piece selected in the game history list
     game_history.append(piece_to_move)
 
     # If wrong colour is selected, alert user and restart whites turn
@@ -279,8 +321,9 @@ def black_move():
         print 'You selected an empty square! Try again.'
         black_move()
 
+    # If the selected square is a black piece
     if board[row_number][col_number] in black_pieces:
-
+        # Retrieve the available moves
         moves = available_moves_up(row_number, col_number, 'b')
 
         # If the selected piece is a king add the blacks movements to the available move list
@@ -288,32 +331,43 @@ def black_move():
             king_moves = available_moves_down(row_number, col_number, 'black_king')
             moves = moves + king_moves
 
+        # If the moves list is not empty, display the available moves, else display no moves available
+        # and restart their turn
         if moves:
             print 'Moves available: ', moves
         else:
             print 'No moves are available'
             black_move()
 
+        # If player is AI select a random move from the available moves list of the previously selected
+        # piece. Enter to continue to make it easier to follow
         if humans == 0:
             place_to_move = random.choice(moves)
             print 'AI chooses to move to ', place_to_move
             raw_input("Press enter to continue")
         else:
+            # Get the position they wish to move their piece to
             place_to_move = raw_input('Where do you wish to move to?: ')
 
+        # If that place is in the available moves list..
         if place_to_move in moves:
+            # Coords of new position
             row_number2 = int(place_to_move[1])
             col_number2 = int(place_to_move[0])
 
+            # Append the coords of where the piece is being moved to to the history list.
             game_history.append(place_to_move)
 
+            # Enter the piece into the the new square. Either normal or kinged
+            # and make the original square empty
             if board[row_number][col_number] == 'b':
                 board[row_number2][col_number2] = 'b'
             else:
                 board[row_number2][col_number2] = 'B'
-
             board[row_number][col_number] = '-'
 
+            # If the position changed was a 2 square jump, replace the middle one with a
+            # an empty square (Taking a piece).(added opposite for king pieces.)
             if col_number2 - col_number == 2 and row_number - row_number2 == 2:
                 board[row_number-1][col_number+1] = '-'
             elif col_number - col_number2 == 2 and row_number - row_number2 == 2:
@@ -323,10 +377,13 @@ def black_move():
             elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
                 board[row_number + 1][col_number - 1] = '-'
 
+            # Check if piece has reached the opponents side of board. If so
+            # change to a king( b -> B )
             kinging(row_number2, col_number2, player)
 
+            # Check after every move if the enemy has piece on the board. If not
+            # declare black the winner. If so, append the board state to the stack and change to blacks move
             bw = black_win(board)
-
             if bw:
                 print 'BLACK WINS!'
                 quit()
@@ -334,6 +391,8 @@ def black_move():
                 temp = copy.deepcopy(board)
                 undo_stack.append(temp)
                 white_move()
+        # If the selected square is not in  the available list, alert user and restart
+        # their turn.
         else:
             print 'Sorry, move not available!'
             black_move()
@@ -386,6 +445,7 @@ def available_moves_up(row, col, player):
     # Conditions for valid moves. Valid moves get appended to the list which then get returned.
     # Prevents pieces moving off the board.
     if row != 0:
+        # Stores the jumping moves available in the moves list
         if col > 1 and row != 1 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
             move = str(col-2) + str(row-2)
             moves.append(move)
@@ -393,6 +453,7 @@ def available_moves_up(row, col, player):
             move = str(col+2) + str(row-2)
             moves.append(move)
         else:
+            # Stores normal moves available in the moves list
             if row != 0 and col != 7 and board[row - 1][col + 1] == '-':
                     move = str(col + 1) + str(row - 1)
                     moves.append(move)
@@ -485,11 +546,11 @@ def pieces_with_moves(game_board, piece):
         return available_moves
 
 
+# Stores the history list into a text file called "history.txt"
 def store_history(hist):
     f = open('history.txt', 'w')
     for ele in hist:
         f.write(ele + '\n')
-
     f.close()
 
 
