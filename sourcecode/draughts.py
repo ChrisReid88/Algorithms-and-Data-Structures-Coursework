@@ -10,24 +10,24 @@ humans = 0
 
 
 # Board for testing
-# board = [['-','-','-','b','-','b','-','-'],
-#          ['-','-','-','-','W','-','-','-'],
-#          ['-','-','-','b','-','b','-','-'],
-#          ['-','-','w','-','-','-','-','-'],
-#          ['-','-','-','-','-','-','-','-'],
-#          ['-','b','-','-','-','-','-','-'],
-#          ['-','-','-','-','-','B','w','-'],
-#          ['-','-','-','-','w','-','-','-']]
+board = [['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','b','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','-','-','-','w','-','-','-'],
+         ['-','-','-','-','-','-','-','-']]
 
 # The actual board
-board = [['-','w','-','w','-','w','-','w'],
-         ['w','-','w','-','w','-','w','-'],
-         ['-','w','-','w','-','w','-','w'],
-         ['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
-         ['b','-','b','-','b','-','b','-'],
-         ['-','b','-','b','-','b','-','b'],
-         ['b','-','b','-','b','-','b','-']]
+# board = [['-','w','-','w','-','w','-','w'],
+#          ['w','-','w','-','w','-','w','-'],
+#          ['-','w','-','w','-','w','-','w'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['b','-','b','-','b','-','b','-'],
+#          ['-','b','-','b','-','b','-','b'],
+#          ['b','-','b','-','b','-','b','-']]
 
 
 top = '  0   1   2   3   4   5   6   7'
@@ -44,9 +44,8 @@ def update_state():
 
 def start_game():
     global humans
-    humans = raw_input("Please enter how many people are playing (0, 1 or 2) : ")
+    humans = int(raw_input("Please enter how many people are playing (0, 1 or 2) : "))
     white_move()
-    return humans
 
 
 # Selecting and moving the white piece
@@ -59,7 +58,7 @@ def white_move():
 
     print 'WHITES TURN'
 
-    if humans != 0:
+    if humans < 2:
         piece_to_move = random.choice(pieces_with_moves(board, 'w'))
         row_number = int(piece_to_move[1])
         col_number = int(piece_to_move[0])
@@ -102,10 +101,10 @@ def white_move():
             print 'No moves are available'
             white_move()
 
-        if humans > 0:
+        if humans < 2:
             place_to_move = random.choice(moves)
             #place_to_move = int(str(place)[::-1])
-            raw_input("Press enter to continue")
+            # raw_input("Press enter to continue")
         else:
             # Get the position they wish to move their piece too
             place_to_move = raw_input('Where do you wish to move to?: ')
@@ -162,11 +161,17 @@ def black_move():
 
     player = 'b'
     black_pieces = ['b', 'B']
-    print "Pieces that have moves available: ", pieces_with_moves(board, 'b')
     print'BLACKS TURN'
-    piece_to_move = raw_input('Select the piece you wish to move: ')
-    row_number = int(piece_to_move[1])
-    col_number = int(piece_to_move[0])
+    if humans == 0:
+        piece_to_move = random.choice(pieces_with_moves(board, 'b'))
+        row_number = int(piece_to_move[1])
+        col_number = int(piece_to_move[0])
+        print "AI chooses the piece at", col_number, row_number
+    else:
+        print "Pieces that have moves available: ", pieces_with_moves(board, 'b')
+        piece_to_move = raw_input('Select the piece you wish to move: ')
+        row_number = int(piece_to_move[1])
+        col_number = int(piece_to_move[0])
 
     # If wrong colour is selected, alert user and restart whites turn
     if board[row_number][col_number] == 'w':
@@ -195,7 +200,12 @@ def black_move():
             print 'No moves are available'
             black_move()
 
-        place_to_move = raw_input('Where do you wish to move to?: ')
+        if humans == 0:
+            place_to_move = random.choice(moves)
+            # raw_input("Press enter to continue")
+        else:
+            place_to_move = raw_input('Where do you wish to move to?: ')
+
         if place_to_move in moves:
 
             row_number2 = int(place_to_move[1])
@@ -246,15 +256,15 @@ def available_moves_down(row, col, player):
 
     # Conditions for valid moves. Valid moves get appended to the list which then get returned.
     # Prevents pieces moving off the board.
-    if row != 7 and row != 0:
-        if col != 7 and row < 6 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
+    if row != 7:
+        if col < 6 and board[row+1][col+1] in opponent and board[row+2][col+2] == '-':
             move = str(col+2) + str(row+2)
             moves.append(move)
-        elif col != 0 and row < 6 and board[row+1][col-1] in opponent and board[row+2][col-2] == '-':
+        elif col < 2 and board[row+1][col-1] in opponent and board[row+2][col-2] == '-':
             move = str(col-2) + str(row+2)
             moves.append(move)
         else:
-            if col != 0 and board[row + 1][col - 1] == '-':
+            if row != 7 and col != 0 and board[row + 1][col - 1] == '-':
                 move = str(col - 1) + str(row + 1)
                 moves.append(move)
             if col != 7 and board[row + 1][col + 1] == '-':
@@ -278,21 +288,20 @@ def available_moves_up(row, col, player):
 
     # Conditions for valid moves. Valid moves get appended to the list which then get returned.
     # Prevents pieces moving off the board.
-    if row != 7 and row != 0:
-        if col != 0 and row > 1 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
+    if row != 1:
+        if col > 1 and board[row-1][col-1] in opponent and board[row-2][col-2] == '-':
             move = str(col-2) + str(row-2)
             moves.append(move)
-        elif col != 7 and row > 1 and board[row-1][col+1] in opponent and board[row-2][col+2] == '-':
+        elif col < 6 and board[row-1][col+1] in opponent and board[row-2][col+2] == '-':
             move = str(col+2) + str(row-2)
             moves.append(move)
-        else:
-            if col != 7 and board[row - 1][col + 1] == '-':
-                move = str(col + 1) + str(row - 1)
-                moves.append(move)
-            if col != 0 and board[row - 1][col - 1] == '-':
-                move = str(col - 1) + str(row - 1)
-                moves.append(move)
-
+    else:
+        if row != 0 and col != 7 and board[row - 1][col + 1] == '-':
+            move = str(col + 1) + str(row - 1)
+            moves.append(move)
+        if row != 0 and col != 0 and board[row - 1][col - 1] == '-':
+            move = str(col - 1) + str(row - 1)
+            moves.append(move)
     return moves
 
 
@@ -300,7 +309,7 @@ def available_moves_up(row, col, player):
 # return that the white team has won
 def white_win(game_board):
 
-    if not any('b' in sublist for sublist in game_board):
+    if not any('b' in sublist for sublist in game_board) and not any('B' in sublist for sublist in game_board):
         # print "Game over! Whites Win!"
         return True
 
@@ -309,7 +318,7 @@ def white_win(game_board):
 # return that the black team has won
 def black_win(game_board):
 
-    if not any('w' in sublist for sublist in game_board):
+    if not any('w' in sublist for sublist in game_board) and not any('W' in sublist for sublist in game_board):
         # print "Game over! Whites Win!"
         return True
 
@@ -353,11 +362,11 @@ def pieces_with_moves(game_board, piece):
                     available_moves.append("%d%d" % (t[0], t[1]))
         elif piece == 'b':
             if available_moves_up(t[1], t[0], 'b'):
+                print t[1]
                 if int(available_moves_up(t[1], t[0], 'b')[0][1]) - t[1] == 2:
                     available_takes.append("%d%d" % (t[0], t[1]))
                 elif not available_takes:
                     available_moves.append("%d%d" % (t[0], t[1]))
-
     # If there are any takes available, display them to use, else,
     # display other available moves.
     if available_takes:
