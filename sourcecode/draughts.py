@@ -6,7 +6,10 @@ Module title = Algorithms and data structures.
 '''
 
 import random
+import copy
+
 humans = 0
+undo_stack = []
 
 
 # Board for testing
@@ -44,14 +47,29 @@ def update_state():
 
 def start_game():
     global humans
-    humans = int(raw_input("Please enter how many people are playing (0, 1 or 2) : "))
-    white_move()
+    global undo_stack
 
+    number = raw_input("Please enter how many people are playing (0, 1 or 2) : ")
+    try:
+        humans = int(number)
+    except ValueError:
+        print "%s is not correct. Please enter '0, 1 or 2' for players" % number
+        start_game()
+    else:
+        if humans >=0 and humans <= 2:
+            temp = copy.deepcopy(board)
+            undo_stack.append(temp)
+            white_move()
+        else:
+            print "%d is not correct. Please enter '0, 1 or 2' for players" % humans
+            start_game()
 
 # Selecting and moving the white piece
 def white_move():
-
+    global board
+    global undo_stack
     update_state()
+
     # Variables with details of white team
     white_pieces = ['w', 'W']
     player = 'w'
@@ -59,7 +77,6 @@ def white_move():
     print 'WHITES TURN'
 
     if humans < 2:
-        raw_input('')
         if len(pieces_with_moves(board, 'w')) > 0:
             piece_to_move = random.choice(pieces_with_moves(board, 'w'))
             row_number = int(piece_to_move[1])
@@ -69,11 +86,23 @@ def white_move():
             print "No more available moves. Draw! "
             exit()
     else:
-        print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
         # The piece the white team wishes to select. (Across then down)
-        piece_to_move = raw_input('Select the piece you wish to move: ')
-        row_number = int(piece_to_move[1])
-        col_number = int(piece_to_move[0])
+
+        print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
+        piece_to_move = raw_input('Select the piece you wish to move or type u to undo: ')
+        if piece_to_move == 'u':
+            print len(undo_stack)
+            if len(undo_stack) == 1:
+                print "Nothing left to undo."
+                white_move()
+            else:
+                undo_stack.pop()
+                board = undo_stack[-1]
+                black_move()
+
+        else:
+            row_number = int(piece_to_move[1])
+            col_number = int(piece_to_move[0])
 
     # If wrong colour is selected, alert user and restart whites turn
     if board[row_number][col_number] == 'b':
@@ -108,13 +137,12 @@ def white_move():
 
         if humans < 2:
             place_to_move = random.choice(moves)
-
-            # raw_input("Press enter to continue")
+            print 'AI chooses to move to ', place_to_move
+            raw_input("Press enter to continue")
         else:
             # Get the position they wish to move their piece too
             place_to_move = raw_input('Where do you wish to move to?: ')
 
-        print place_to_move
         # If that place is in the available moves list..
         if place_to_move in moves:
             # Coords of new position
@@ -151,7 +179,10 @@ def white_move():
                 print 'WHITE WINS!'
                 quit()
             else:
+                temp = copy.deepcopy(board)
+                undo_stack.append(temp)
                 black_move()
+
 
         # If the selected square is not in  the available list, alert user and restart
         # their turn.
@@ -163,8 +194,9 @@ def white_move():
 
 # Selecting and moving the white piece
 def black_move():
+    global board
+    global undo_stack
     update_state()
-
     player = 'b'
     black_pieces = ['b', 'B']
     print'BLACKS TURN'
@@ -178,9 +210,20 @@ def black_move():
             print "No more available moves. It's a draw!"
     else:
         print "Pieces that have moves available: ", pieces_with_moves(board, 'b')
+
         piece_to_move = raw_input('Select the piece you wish to move: ')
-        row_number = int(piece_to_move[1])
-        col_number = int(piece_to_move[0])
+        if piece_to_move == 'u':
+            print
+            if len(undo_stack) == 1:
+                print "Nothing left to undo"
+                black_move()
+            else:
+                undo_stack.pop()
+                board = undo_stack[-1]
+                white_move()
+        else:
+            row_number = int(piece_to_move[1])
+            col_number = int(piece_to_move[0])
 
     # If wrong colour is selected, alert user and restart whites turn
     if board[row_number][col_number] == 'w':
@@ -211,12 +254,12 @@ def black_move():
 
         if humans == 0:
             place_to_move = random.choice(moves)
-            # raw_input("Press enter to continue")
+            print 'AI chooses to move to ', place_to_move
+            raw_input("Press enter to continue")
         else:
             place_to_move = raw_input('Where do you wish to move to?: ')
 
         if place_to_move in moves:
-
             row_number2 = int(place_to_move[1])
             col_number2 = int(place_to_move[0])
 
@@ -236,8 +279,6 @@ def black_move():
             elif col_number - col_number2 == 2 and row_number2 - row_number == 2:
                 board[row_number + 1][col_number - 1] = '-'
 
-            print row_number2
-            print col_number2
             kinging(row_number2, col_number2, player)
 
             bw = black_win(board)
@@ -246,6 +287,8 @@ def black_move():
                 print 'BLACK WINS!'
                 quit()
             else:
+                temp = copy.deepcopy(board)
+                undo_stack.append(temp)
                 white_move()
         else:
             print 'Sorry, move not available!'
@@ -396,73 +439,11 @@ def pieces_with_moves(game_board, piece):
         return available_moves
 
 
+def undo(undo_stack):
+    undo_stack.pop
+    return undo_stack[-1]
+
+
 # Initiate the game.
 start_game()
-
-# for i, x in enumerate(game_board):
-#     if king in x:
-#         available_pieces.append("%d%d" % (x.index(king), i))
-#
-# for i, x in enumerate(game_board):
-#     if piece in x:
-#         available_pieces.append("%d%d" % (x.index(piece), i))
-
-
-# Find out and display available moves
-# def available_moves(row, col, player):
-#     moves = []
-#
-#     if player == 'white':
-#         piece = 'b'
-#         if col != 0 and board[row + 1][col - 1] == '-':
-#             move = str(col - 1) + str(row + 1)
-#             moves.append(move)
-#         if col != 7 and board[row + 1][col + 1] == '-':
-#             move = str(col + 1) + str(row + 1)
-#             moves.append(move)
-#         if col != 7 and board[row + 1][col + 1] == piece and board[row + 2][col + 2] == '-':
-#             move = str(col + 2) + str(row + 2)
-#             moves.append(move)
-#         if col != 0 and board[row + 1][col - 1] == piece and board[row + 2][col - 2] == '-':
-#             move = str(col - 2) + str(row + 2)
-#             moves.append(move)
-#     elif player == 'black':
-#         piece = 'w'
-#         if col != 7 and board[row - 1][col + 1] == '-':
-#             move = str(col + 1) + str(row - 1)
-#             moves.append(move)
-#         if col != 0 and board[row-1][col-1] == '-':
-#             move = str(col-1) + str(row-1)
-#             moves.append(move)
-#         if col != 7 and board[row-1][col-1] == piece and board[row-2][col-2] == '-':
-#             move = str(col-2) + str(row-2)
-#             moves.append(move)
-#         if col != 0 and board[row-1][col+1] == piece and board[row-2][col+2] == '-':
-#             move = str(col+2) + str(row-2)
-#             moves.append(move)
-#
-#     return moves
-
-
-# def valid_white_move(row, col):
-#     if board[row-1][col+1] == '-' and board[row+1][col+1]:
-#         return True
-#     return False
-
-
-# def white_move():
-#     peice_to_move = raw_input('Enter a peice to move(E.g 1 1): ')
-#     x = int(peice_to_move[0])
-#     y = int(peice_to_move[2])
-#
-#     if board[x][y] == 'w':
-#         board[x][y] = '-'
-#         place_to_move = raw_input('Select where you want to move: ')
-#         x2 = int(place_to_move[0])
-#         y2 = int(place_to_move[2])
-#         if board[x][y] == '-':
-#             board[x2][y2] = 'w'
-#     else:
-#         print "Sorry. Invalid selection"
-#     update_state()
 
