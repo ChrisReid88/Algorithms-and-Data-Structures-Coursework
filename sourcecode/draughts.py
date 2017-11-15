@@ -129,18 +129,20 @@ def white_move():
         # the coords of the piece they wish to move.
         else:
             print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
-            piece_to_move = raw_input('Select the piece you wish to move("u" to undo or "r" for redo) : ')
-            # try:
-            #     int(piece_to_move)
-            # except ValueError:
-            #     try:
-            #         piece_to_move == 'r'
-            #     except ValueError:
-            #         try:
-            #             piece_to_move == 'u'
-            #         except ValueError:
-            #             print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
-            #             white_move()
+            piece_to_move = raw_input('Select the piece you wish to move ("u" to undo or "r" for redo): ')
+
+            # Validation for input
+            try:
+                int(piece_to_move)
+            except ValueError:
+                try:
+                    piece_to_move == 'r'
+                except ValueError:
+                    try:
+                        piece_to_move == 'u'
+                    except ValueError:
+                        print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
+                        white_move()
 
             # If player enters 'u' and there is only the starting board in the stack, alert them and
             # restart their move
@@ -163,9 +165,13 @@ def white_move():
                 # If there are states in the deque, pop from the left of the deck and append it to the stack
                 # before setting the board to the previous state in the deque
                 else:
-                    board = redo_stack[-1]
-                    undo_stack.append(redo_stack.pop())
-                    black_move()
+                    if redo_stack:
+                        board = redo_stack[-1]
+                        undo_stack.append(redo_stack.pop())
+                        black_move()
+                    else:
+                        print "Nothing more to redo!"
+                        white_move()
             # If the user entered coords, assign them to the variables
             else:
                 row_number = int(piece_to_move[1])
@@ -319,17 +325,17 @@ def black_move():
             piece_to_move = raw_input('Select the piece you wish to move: ')
 
             # Validation on input.
-            # try:
-            #     int(piece_to_move)
-            # except ValueError:
-            #     try:
-            #         piece_to_move == 'u'
-            #     except ValueError:
-            #         try:
-            #             piece_to_move == 'r'
-            #         except ValueError:
-            #             print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
-            #             black_move()
+            try:
+                int(piece_to_move)
+            except ValueError:
+                try:
+                    piece_to_move == 'u'
+                except ValueError:
+                    try:
+                        piece_to_move == 'r'
+                    except ValueError:
+                        print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
+                        black_move()
 
             # If player enters 'u' and there is only the starting board in the stack, alert them and
             # restart their move
@@ -346,9 +352,13 @@ def black_move():
                 # If player enters 'r' for redo and there is only starting board in the deque, alert them and restart their
                 # move.
             elif piece_to_move == 'r':
-                board = redo_stack[-1]
-                undo_stack.append(redo_stack.pop())
-                white_move()
+                if redo_stack:
+                    board = redo_stack[-1]
+                    undo_stack.append(redo_stack.pop())
+                    white_move()
+                else:
+                    print "Nothing more to redo!"
+                    black_move()
             # If the user entered coords, assign them to the variables
             else:
                 row_number = int(piece_to_move[1])
