@@ -18,6 +18,7 @@ humans = 0
 undo_stack = []
 redo_stack = deque()
 game_history = []
+history_row = 0
 
 
 # Board for testing
@@ -89,6 +90,7 @@ def white_move():
     global undo_stack
     global game_history
     global redo_stack
+    global history_row
 
     # Display the current state of the board at the beginning of the turn
     update_state()
@@ -111,6 +113,14 @@ def white_move():
         else:
             print "No more available moves. Draw! "
             exit()
+    # Code for replaying a game from the text file. Calls in the row and removes the new line escape character.
+    # When a row is read, it  goes to the next.
+    elif humans == 3:
+        piece_to_move = replay()[history_row].strip('\n')
+        history_row = history_row + 1
+        row_number = int(piece_to_move[1])
+        col_number = int(piece_to_move[0])
+        print "Player chooses the piece at", col_number, row_number
     # If the player is not AI but there are no available moves, its a draw and exit
     else:
         if len(pieces_with_moves(board, 'w')) == 0:
@@ -197,6 +207,13 @@ def white_move():
             place_to_move = random.choice(moves)
             print 'AI chooses to move to ', place_to_move
             raw_input("Press enter to continue")
+        elif humans == 3:
+            place_to_move = replay()[history_row].strip('\n')
+            history_row = history_row + 1
+            row_number2 = int(place_to_move[1])
+            col_number2 = int(place_to_move[0])
+            print "Player moves to ", col_number2, row_number2
+            raw_input("Press enter to continue")
         else:
             # Get the position they wish to move their piece too
             place_to_move = raw_input('Where do you wish to move to?: ')
@@ -256,6 +273,7 @@ def black_move():
     global board
     global undo_stack
     global game_history
+    global history_row
 
     # Display the current state of the board at the beginning of the turn
     update_state()
@@ -278,6 +296,13 @@ def black_move():
         else:
             print "No more available moves. It's a draw!"
             exit()
+    elif humans == 3:
+        piece_to_move = replay()[history_row].strip('\n')
+        history_row = history_row + 1
+        row_number = int(piece_to_move[1])
+        col_number = int(piece_to_move[0])
+        print "Player chooses the piece at", col_number, row_number
+        raw_input('')
     # If the player is not AI but there are no available moves, its a draw and exit
     else:
         if len(pieces_with_moves(board, 'w')) == 0:
@@ -358,6 +383,13 @@ def black_move():
         if humans == 0:
             place_to_move = random.choice(moves)
             print 'AI chooses to move to ', place_to_move
+            raw_input("Press enter to continue")
+        elif humans == 3:
+            place_to_move = replay()[history_row].strip('\n')
+            history_row = history_row + 1
+            row_number2 = int(place_to_move[1])
+            col_number2 = int(place_to_move[0])
+            print "Player moves to ", col_number2, row_number2
             raw_input("Press enter to continue")
         else:
             # Get the position they wish to move their piece to
@@ -570,5 +602,28 @@ def store_history(hist):
     f.close()
 
 
+# Pulls the entries from the history text file and returns it as a list.
+def replay():
+    with open('history.txt', 'r') as f:
+        game = f.readlines()
+    return game
+
+
+# Decide if the user wants to play or watch. If watch, set humans to '3'
+# If play start the game normally.
+def play_or_watch():
+    global humans
+    option = raw_input("Enter 'p' to play or 'w' to watch previous game: ")
+    if option != 'p' and option != 'w':
+        print "Sorry, wrong input."
+        play_or_watch()
+    else:
+        if option == 'p':
+            start_game()
+        if option == 'w':
+            humans = 3
+            white_move()
+
+
 # Initiate the game.
-start_game()
+play_or_watch()
