@@ -22,24 +22,24 @@ history_row = 0
 
 
 # Board for testing
-# board = [['-','w','-','-','-','-','-','-'],
-#          ['-','-','-','-','B','-','-','-'],
-#          ['-','b','-','-','-','-','-','-'],
-#          ['-','-','b','-','-','-','-','-'],
-#          ['-','-','-','-','-','-','-','-'],
-#          ['-','-','-','-','-','-','-','-'],
-#          ['-','-','-','-','-','-','-','-'],
-#          ['-','-','-','-','-','-','-','-']]
+board = [['-','-','-','-','-','-','-','-'],
+         ['-','-','w','-','-','','-','-'],
+         ['-','-','-','-','b','-','-','-'],
+         ['W','-','-','-','-','-','-','-'],
+         ['-','b','-','b','-','b','-','-'],
+         ['-','-','-','-','-','-','-','-'],
+         ['-','w','-','-','-','-','B','-'],
+         ['-','-','-','-','-','-','-','-']]
 
 # # The actual board
-board = [['-','w','-','w','-','w','-','w'],
-         ['w','-','w','-','w','-','w','-'],
-         ['-','w','-','w','-','w','-','w'],
-         ['-','-','-','-','-','-','-','-'],
-         ['-','-','-','-','-','-','-','-'],
-         ['b','-','b','-','b','-','b','-'],
-         ['-','b','-','b','-','b','-','b'],
-         ['b','-','b','-','b','-','b','-']]
+# board = [['-','w','-','w','-','w','-','w'],
+#          ['w','-','w','-','w','-','w','-'],
+#          ['-','w','-','w','-','w','-','w'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['-','-','-','-','-','-','-','-'],
+#          ['b','-','b','-','b','-','b','-'],
+#          ['-','b','-','b','-','b','-','b'],
+#          ['b','-','b','-','b','-','b','-']]
 
 # Top of the board to be displayed
 top = '  0   1   2   3   4   5   6   7'
@@ -195,13 +195,19 @@ def white_move():
     # If the selected square is a white piece
     if board[row_number][col_number] in white_pieces:
 
-        # Retrieve the available moves
-        moves = available_moves_down(row_number, col_number, player)
-
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'W':
             king_moves = available_moves_up(row_number, col_number, 'white_king')
-            moves = moves + king_moves
+            moves = available_moves_down(row_number, col_number, 'w')
+            moves = king_moves + moves
+            for ele in moves:
+                if row_number - int(ele[1]) == 2 or row_number - int(ele[1]) == -2:
+                    moves = []
+                    moves.append("%d%d" % (int(ele[0]), int(ele[1])))
+                    print moves
+        else:
+            moves = available_moves_down(row_number, col_number, 'w')
+
 
         # If there are moves available display them. If not, alert user no moves available
         # and restart their move
@@ -258,12 +264,16 @@ def white_move():
             # change to a king( w -> W )
             kinging(row_number2, col_number2, player)
 
+            double_jump(board, row_number2, col_number2)
+
             # Check after every move if the enemy has piece on the board. If not
             # declare whites the winner. If so, append the board state to the stack and change to blacks move.
             ww = white_win(board)
             if ww:
                 print 'WHITE WINS!'
                 quit()
+            elif double_jump(board, row_number2, col_number2, ):
+                white_move()
             else:
                 temp = copy.deepcopy(board)
                 undo_stack.append(temp)
@@ -381,13 +391,19 @@ def black_move():
 
     # If the selected square is a black piece
     if board[row_number][col_number] in black_pieces:
-        # Retrieve the available moves
-        moves = available_moves_up(row_number, col_number, 'b')
 
         # If the selected piece is a king add the blacks movements to the available move list
         if board[row_number][col_number] == 'B':
             king_moves = available_moves_down(row_number, col_number, 'black_king')
-            moves = moves + king_moves
+            moves = available_moves_up(row_number, col_number, 'b')
+            moves = king_moves + moves
+            for ele in moves:
+                if row_number - int(ele[1]) == 2 or row_number - int(ele[1]) == -2:
+                    moves = []
+                    moves.append("%d%d" % (int(ele[0]), int(ele[1])))
+                    print moves
+        else:
+            moves = available_moves_up(row_number, col_number, 'b')
 
         # If the moves list is not empty, display the available moves, else display no moves available
         # and restart their turn
@@ -452,6 +468,8 @@ def black_move():
             if bw:
                 print 'BLACK WINS!'
                 quit()
+            elif double_jump(board, row_number2, col_number2, ):
+                white_move()
             else:
                 temp = copy.deepcopy(board)
                 undo_stack.append(temp)
@@ -608,9 +626,11 @@ def pieces_with_moves(game_board, piece):
     # If there are any takes available, display them to use, else,
     # display other available moves.
     if available_takes:
-        return available_takes
+        takes_set = list(set(available_takes))
+        return takes_set
     else:
-        return available_moves
+        takes_set = list(set(available_moves))
+        return takes_set
 
 
 # Stores the history list into a text file called "history.txt"
@@ -642,6 +662,29 @@ def play_or_watch():
         if option == 'w':
             humans = 3
             white_move()
+
+
+def double_jump(gameboard, row, col):
+    piece = gameboard[row][col]
+    print piece
+
+    if piece == 'w':
+        moves = available_moves_down(row,col,'w')
+        for ele in moves:
+            if row - int(ele[1]) == -2:
+                return True
+    elif piece == 'b':
+        moves = available_moves_down(row, col, 'w')
+        for ele in moves:
+            if row - int(ele[1]) == 2:
+                return True
+    elif piece == 'B' or piece == 'W':
+        moves = available_moves_up(row, col, 'white_king')
+        moves2 = available_moves_down(row, col, 'black_king')
+        moves = moves + moves2
+        for ele in moves:
+            if row - int(ele[1]) == -2 or row - int(ele[1]) == 2:
+                return True
 
 
 # Initiate the game.
