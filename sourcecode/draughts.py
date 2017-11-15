@@ -74,7 +74,6 @@ def start_game():
             # Add the initial state of the board to the undo stack and redo deque
             temp = copy.deepcopy(board)
             undo_stack.append(temp)
-            redo_stack.append(board)
             white_move()
         else:
             # If the conditions are not met, alert the user and re-execute this function
@@ -130,13 +129,18 @@ def white_move():
         # the coords of the piece they wish to move.
         else:
             print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
-            piece_to_move = raw_input('Select the piece you wish to move("u" to undo or "r" for redo : ')
-            try:
-                int(piece_to_move)
-            except ValueError:
-                print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
-                white_move()
-
+            piece_to_move = raw_input('Select the piece you wish to move("u" to undo or "r" for redo) : ')
+            # try:
+            #     int(piece_to_move)
+            # except ValueError:
+            #     try:
+            #         piece_to_move == 'r'
+            #     except ValueError:
+            #         try:
+            #             piece_to_move == 'u'
+            #         except ValueError:
+            #             print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
+            #             white_move()
 
             # If player enters 'u' and there is only the starting board in the stack, alert them and
             # restart their move
@@ -144,7 +148,7 @@ def white_move():
                 if len(undo_stack) == 1:
                     print "Nothing left to undo."
                     white_move()
-                # If there are other states in the stack, remove from the stack and push to deque, then
+                # If there are other states in the stack, remove from the stack and append to deque, then
                 # set the board to the last state within the stack.
                 else:
                     redo_stack.append(undo_stack.pop())
@@ -159,8 +163,8 @@ def white_move():
                 # If there are states in the deque, pop from the left of the deck and append it to the stack
                 # before setting the board to the previous state in the deque
                 else:
-                    undo_stack.append(redo_stack.popleft())
-                    board = redo_stack[0]
+                    board = redo_stack[-1]
+                    undo_stack.append(redo_stack.pop())
                     black_move()
             # If the user entered coords, assign them to the variables
             else:
@@ -315,20 +319,25 @@ def black_move():
             piece_to_move = raw_input('Select the piece you wish to move: ')
 
             # Validation on input.
-            try:
-                int(piece_to_move)
-            except ValueError:
-                print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
-                black_move()
+            # try:
+            #     int(piece_to_move)
+            # except ValueError:
+            #     try:
+            #         piece_to_move == 'u'
+            #     except ValueError:
+            #         try:
+            #             piece_to_move == 'r'
+            #         except ValueError:
+            #             print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
+            #             black_move()
 
             # If player enters 'u' and there is only the starting board in the stack, alert them and
             # restart their move
             if piece_to_move == 'u':
-                print
                 if len(undo_stack) == 1:
                     print "Nothing left to undo"
                     black_move()
-                # If there are other states in the stack, remove from the stack and push to deque, then
+                # If there are other states in the stack, remove from the stack and append to deque, then
                 # set the board to the last state within the stack.
                 else:
                     redo_stack.append(undo_stack.pop())
@@ -337,8 +346,8 @@ def black_move():
                 # If player enters 'r' for redo and there is only starting board in the deque, alert them and restart their
                 # move.
             elif piece_to_move == 'r':
-                undo_stack.append(redo_stack.popleft())
-                board = redo_stack[0]
+                board = redo_stack[-1]
+                undo_stack.append(redo_stack.pop())
                 white_move()
             # If the user entered coords, assign them to the variables
             else:
@@ -479,7 +488,7 @@ def available_moves_down(row, col, player):
 # Find out and display available moves for black pieces or kinged white pieces.
 def available_moves_up(row, col, player):
 
-    #Empty list to store valid moves
+    # Empty list to store valid moves
     moves = []
 
     # Creating a list containing the two opponents pieces
