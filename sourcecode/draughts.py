@@ -121,6 +121,13 @@ def white_move():
         else:
             print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
             piece_to_move = raw_input('Select the piece you wish to move("u" to undo or "r" for redo : ')
+            try:
+                int(piece_to_move)
+            except ValueError:
+                print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
+                white_move()
+
+
             # If player enters 'u' and there is only the starting board in the stack, alert them and
             # restart their move
             if piece_to_move == 'u':
@@ -281,6 +288,13 @@ def black_move():
         else:
             print "Pieces that have moves available: ", pieces_with_moves(board, 'b')
             piece_to_move = raw_input('Select the piece you wish to move: ')
+
+            # Validation on input.
+            try:
+                int(piece_to_move)
+            except ValueError:
+                print "%s is not correct. Please enter a row number and col number (eg 27)" % piece_to_move
+                black_move()
 
             # If player enters 'u' and there is only the starting board in the stack, alert them and
             # restart their move
