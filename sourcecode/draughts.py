@@ -143,7 +143,7 @@ def white_move():
                 # before setting the board to the previous state in the deque
                 else:
                     undo_stack.append(redo_stack.popleft())
-                    board = undo_stack[-1]
+                    board = redo_stack[0]
                     black_move()
             # If the user entered coords, assign them to the variables
             else:
@@ -299,7 +299,7 @@ def black_move():
                 # move.
             elif piece_to_move == 'r':
                 undo_stack.append(redo_stack.popleft())
-                board = undo_stack[-1]
+                board = redo_stack[0]
                 white_move()
             # If the user entered coords, assign them to the variables
             else:
