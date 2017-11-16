@@ -23,9 +23,9 @@ history_row = 0
 
 # Board for testing
 board = [['-','-','-','-','-','-','-','-'],
-         ['-','-','w','-','-','','-','-'],
-         ['-','-','-','-','b','-','-','-'],
-         ['W','-','-','-','-','-','-','-'],
+         ['w','-','-','-','-','-','-','-'],
+         ['-','b','-','-','b','-','-','-'],
+         ['-','-','-','-','-','-','-','-'],
          ['-','b','-','b','-','b','-','-'],
          ['-','-','-','-','-','-','-','-'],
          ['-','w','-','-','-','-','B','-'],
@@ -130,7 +130,6 @@ def white_move():
         else:
             print "Pieces that have moves available: ", pieces_with_moves(board, 'w')
             piece_to_move = raw_input('Select the piece you wish to move ("u" to undo or "r" for redo): ')
-
             # Validation for input
             try:
                 int(piece_to_move)
